@@ -1,10 +1,11 @@
 package com.bankamen.dto;
 
+import java.time.LocalDate;
+
 import com.bankamen.entity.Frequency;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -15,5 +16,5 @@ public class ScheduledTransferRequest {
     private Frequency frequency;
     private String description;
     private Long sourceAccountId;
-    private Long targetAccountId;
+    private String targetAccountNumber;
 }

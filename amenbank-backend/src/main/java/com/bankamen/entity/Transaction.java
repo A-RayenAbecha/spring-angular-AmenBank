@@ -1,6 +1,7 @@
 package com.bankamen.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +30,14 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
-    @JsonIgnoreProperties({"transactions", "outgoingScheduledTransfers", "incomingScheduledTransfers"})
+    @JsonIgnoreProperties({"transactions", "outgoingScheduledTransfers", "incomingScheduledTransfers", "user"})
     private BankAccount account;
 
     private String description;
 
+    // Add a method to get account ID without loading the full account
+    @JsonProperty("accountId")
+    public Long getAccountId() {
+        return account != null ? account.getId() : null;
+    }
 }

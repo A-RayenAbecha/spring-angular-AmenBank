@@ -1,20 +1,27 @@
 package com.bankamen.service;
 
-import com.bankamen.dto.ScheduledTransferRequest;
-import com.bankamen.dto.ScheduledTransferResponse;
-import com.bankamen.dto.ScheduledTransferUpdateRequest;
-import com.bankamen.entity.*;
-import com.bankamen.exception.BusinessException;
-import com.bankamen.repository.*;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.bankamen.dto.ScheduledTransferRequest;
+import com.bankamen.dto.ScheduledTransferResponse;
+import com.bankamen.dto.ScheduledTransferUpdateRequest;
+import com.bankamen.entity.BankAccount;
+import com.bankamen.entity.ScheduledTransfer;
+import com.bankamen.entity.Transaction;
+import com.bankamen.entity.TransactionType;
+import com.bankamen.exception.BusinessException;
+import com.bankamen.repository.BankAccountRepository;
+import com.bankamen.repository.ScheduledTransferRepository;
+import com.bankamen.repository.TransactionRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -23,14 +30,17 @@ public class ScheduledTransferService {
     private final ScheduledTransferRepository scheduledTransferRepo;
     private final BankAccountRepository accountRepo;
     private final TransactionRepository transactionRepo;
+    private final NotificationService notificationService;
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTransferService.class);
 
 
     public ScheduledTransfer createScheduledTransfer(ScheduledTransferRequest request) {
         BankAccount source = accountRepo.findById(request.getSourceAccountId())
                 .orElseThrow(() -> new BusinessException("Compte source introuvable"));
-        BankAccount target = accountRepo.findById(request.getTargetAccountId())
-                .orElseThrow(() -> new BusinessException("Compte cible introuvable"));
+        
+        // Find target account by account number
+        BankAccount target = accountRepo.findByAccountNumber(request.getTargetAccountNumber())
+                .orElseThrow(() -> new BusinessException("Compte destinataire introuvable"));
 
         ScheduledTransfer transfer = new ScheduledTransfer();
         transfer.setAmount(request.getAmount());
@@ -42,7 +52,42 @@ public class ScheduledTransferService {
         transfer.setTargetAccount(target);
         transfer.setActive(true);
 
-        return scheduledTransferRepo.save(transfer);
+        transfer = scheduledTransferRepo.save(transfer);
+
+        // Create reminder for the first execution
+        LocalDateTime nextExecution = calculateNextExecutionDate(transfer);
+        if (nextExecution != null) {
+            notificationService.createReminderNotification(transfer, nextExecution);
+        }
+
+        return transfer;
+    }
+
+    private LocalDateTime calculateNextExecutionDate(ScheduledTransfer transfer) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = transfer.getStartDate();
+        
+        if (startDate.isBefore(today)) {
+            startDate = today;
+        }
+
+        return switch (transfer.getFrequency()) {
+            case DAILY -> startDate.atTime(8, 0); // Execute at 8:00 AM
+            case WEEKLY -> {
+                LocalDate next = startDate;
+                while (next.isBefore(today)) {
+                    next = next.plusWeeks(1);
+                }
+                yield next.atTime(8, 0);
+            }
+            case MONTHLY -> {
+                LocalDate next = startDate;
+                while (next.isBefore(today)) {
+                    next = next.plusMonths(1);
+                }
+                yield next.atTime(8, 0);
+            }
+        };
     }
 
     public List<ScheduledTransfer> getAllActiveTransfers() {
@@ -60,10 +105,19 @@ public class ScheduledTransferService {
             if (shouldExecuteToday(transfer, today)) {
                 try {
                     boolean success = performTransfer(transfer);
-                    if (success) executedCount++;
+                    if (success) {
+                        executedCount++;
+                        // Create execution notification
+                        notificationService.createExecutionNotification(transfer);
+                        
+                        // Create reminder for next execution
+                        LocalDateTime nextExecution = calculateNextExecutionDate(transfer);
+                        if (nextExecution != null) {
+                            notificationService.createReminderNotification(transfer, nextExecution);
+                        }
+                    }
                 } catch (Exception e) {
-                    // Log l’erreur pour audit
-                    System.err.println("Erreur virement programmé ID " + transfer.getId() + " : " + e.getMessage());
+                    logger.error("Erreur virement programmé ID " + transfer.getId() + " : " + e.getMessage());
                 }
             }
         }

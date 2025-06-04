@@ -83,6 +83,22 @@ public class LoanService {
 
         return loanRepository.save(application);
     }
+    public List<LoanApplication> getUserLoanApplications(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException("Utilisateur introuvable"));
+        return loanRepository.findByAccount_User(user);
+    }
+
+    public LoanApplication getUserLoanApplication(Long id, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException("Utilisateur introuvable"));
+
+        LoanApplication application = loanRepository.findById(id).orElse(null);
+        if (application != null && application.getAccount().getUser().getId().equals(user.getId())) {
+            return application;
+        }
+        return null;
+    }
 
 
 

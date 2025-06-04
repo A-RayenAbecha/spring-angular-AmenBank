@@ -10,16 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/loans")
+@RequestMapping("/client/loans")
 @RequiredArgsConstructor
 public class LoanController {
 
@@ -29,6 +26,7 @@ public class LoanController {
     public ResponseEntity<LoanSimulationResponse> simulate(@RequestBody LoanSimulationRequest request) {
         return ResponseEntity.ok(loanService.simulateLoan(request));
     }
+
     @PostMapping("/apply")
     public ResponseEntity<LoanApplicationResponse> apply(@RequestBody LoanApplicationRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -37,9 +35,9 @@ public class LoanController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String username = auth.getName();  // ✅ Always safe, even with custom authentication
-
+        String username = auth.getName();
         LoanApplication loan = loanService.submitLoanRequest(request, username);
+
         LoanApplicationResponse response = new LoanApplicationResponse();
         response.setId(loan.getId());
         response.setAmount(loan.getAmount());
@@ -51,4 +49,40 @@ public class LoanController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/my-applications")
+    public ResponseEntity<List<LoanApplicationResponse>> getMyLoanApplications() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        List<LoanApplication> applications = loanService.getUserLoanApplications(username);
+        List<LoanApplicationResponse> responses = applications.stream()
+                .map(this::mapToResponse)
+                .toList();
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/applications/{id}")
+    public ResponseEntity<LoanApplicationResponse> getLoanApplication(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        LoanApplication application = loanService.getUserLoanApplication(id, username);
+        if (application == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(mapToResponse(application));
+    }
+
+    private LoanApplicationResponse mapToResponse(LoanApplication loan) {
+        LoanApplicationResponse response = new LoanApplicationResponse();
+        response.setId(loan.getId());
+        response.setAmount(loan.getAmount());
+        response.setTermInMonths(loan.getTermInMonths());
+        response.setInterestRate(loan.getInterestRate());
+        response.setStatus(loan.getStatus());
+        response.setAccountId(loan.getAccount().getId());
+        return response;
+    }
 }

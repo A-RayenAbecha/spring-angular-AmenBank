@@ -48,12 +48,20 @@ public class AdminMonitoringController {
     public ResponseEntity<Map<String, Object>> getIndicators() {
         return ResponseEntity.ok(monitoringService.getKPI());
     }
+
     @GetMapping("/logins")
-    public ResponseEntity<List<LoginEvent>> allLoginEvents() {
-        return ResponseEntity.ok(monitoringService.getAllLogins());
+    public ResponseEntity<List<LoginEvent>> filterLoginEvents(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String ipAddress
+    ) {
+        return ResponseEntity.ok(monitoringService.getFilteredLogins(start, end, username, ipAddress));
     }
+
     @Autowired
     private UserRepository userRepository;
+
     @PutMapping("/reactivate/{username}")
     public ResponseEntity<String> reactivateUser(@PathVariable String username) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
@@ -68,6 +76,4 @@ public class AdminMonitoringController {
 
         return ResponseEntity.ok("User reactivated successfully.");
     }
-
-
 }

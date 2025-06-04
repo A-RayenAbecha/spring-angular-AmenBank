@@ -28,6 +28,10 @@ public class BankAccountService {
         account.setUser(user);
         return bankAccountRepo.save(account);
     }
+    public boolean userOwnsAccount(Long accountId, String username) {
+        BankAccount account = bankAccountRepo.findById(accountId).orElse(null);
+        return account != null && account.getUser().getUsername().equals(username);
+    }
 
     public BankAccount getAccountDetails(Long accountId) {
         return bankAccountRepo.findById(accountId).orElseThrow();

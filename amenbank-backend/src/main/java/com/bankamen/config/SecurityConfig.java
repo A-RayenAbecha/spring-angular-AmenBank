@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Fixed: properly configure CORS
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/client/**").authenticated()
                         .requestMatchers("/api/loan/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("SUPERADMIN")
                         .anyRequest().permitAll()

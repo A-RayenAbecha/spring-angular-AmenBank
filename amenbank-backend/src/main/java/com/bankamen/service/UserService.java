@@ -1,13 +1,15 @@
 package com.bankamen.service;
 
-import com.bankamen.entity.User;
-import com.bankamen.repository.UserRepository;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import com.bankamen.entity.User;
+import com.bankamen.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -51,7 +53,24 @@ public class UserService {
 
         return userRepository.save(user);
     }
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
 
+    public User getCurrentUserProfile(String username) {
+        return findByUsername(username);
+    }
+
+    public User getUserFromAuth(Authentication auth) {
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 
 }

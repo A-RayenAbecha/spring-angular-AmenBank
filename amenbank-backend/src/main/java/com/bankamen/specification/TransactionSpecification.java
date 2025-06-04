@@ -34,5 +34,15 @@ public class TransactionSpecification {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    public static Specification<Transaction> filterByCriteriaForUser(TransactionFilterRequest filterRequest, Long userId) {
+        Specification<Transaction> spec = filterByCriteria(filterRequest);
+
+        // Add user filtering
+        Specification<Transaction> userSpec = (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("account").get("user").get("id"), userId);
+
+        return spec.and(userSpec);
+    }
 }
 
