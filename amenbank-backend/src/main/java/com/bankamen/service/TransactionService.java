@@ -1,27 +1,29 @@
 package com.bankamen.service;
 
+import java.io.InputStreamReader;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.bankamen.dto.CreateTransactionRequest;
 import com.bankamen.dto.TransactionFilterRequest;
 import com.bankamen.entity.BankAccount;
 import com.bankamen.entity.Transaction;
 import com.bankamen.entity.TransactionType;
+import static com.bankamen.entity.TransactionType.DEPOSIT;
+import static com.bankamen.entity.TransactionType.TRANSFER;
+import static com.bankamen.entity.TransactionType.WITHDRAWAL;
 import com.bankamen.entity.User;
 import com.bankamen.exception.BusinessException;
 import com.bankamen.repository.BankAccountRepository;
 import com.bankamen.repository.TransactionRepository;
 import com.bankamen.repository.UserRepository;
 import com.bankamen.specification.TransactionSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 import com.opencsv.CSVReader;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStreamReader;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static com.bankamen.entity.TransactionType.*;
 
 @Service
 public class TransactionService {
@@ -109,24 +111,55 @@ public class TransactionService {
         try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             String[] line;
             reader.readNext(); // Skip header
+            int lineNumber = 1;
 
             while ((line = reader.readNext()) != null) {
-                Long sourceId = Long.parseLong(line[0]);
-                Long targetId = Long.parseLong(line[1]);
-                Double amount = Double.parseDouble(line[2]);
-                String description = line[3];
+                lineNumber++;
+                try {
+                    if (line.length < 4) {
+                        throw new BusinessException("La ligne " + lineNumber + " ne contient pas assez de colonnes. Format attendu: ID Source, ID Destination, Montant, Description");
+                    }
 
-                CreateTransactionRequest request = new CreateTransactionRequest();
-                request.setType(TransactionType.TRANSFER);
-                request.setAmount(amount);
-                request.setTargetAccountId(targetId);
-                request.setDescription(description);
+                    Long sourceId = parseLong(line[0], "ID Source", lineNumber);
+                    Long targetId = parseLong(line[1], "ID Destination", lineNumber);
+                    Double amount = parseDouble(line[2], "Montant", lineNumber);
+                    String description = line[3];
 
-                createTransaction(sourceId, request); // Reuse your existing logic
+                    if (description == null || description.trim().isEmpty()) {
+                        throw new BusinessException("La description est requise à la ligne " + lineNumber);
+                    }
+
+                    CreateTransactionRequest request = new CreateTransactionRequest();
+                    request.setType(TransactionType.TRANSFER);
+                    request.setAmount(amount);
+                    request.setTargetAccountId(targetId);
+                    request.setDescription(description);
+
+                    createTransaction(sourceId, request);
+                } catch (BusinessException e) {
+                    throw new BusinessException("Erreur à la ligne " + lineNumber + ": " + e.getMessage());
+                }
             }
-
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessException("Erreur lors de l'import du fichier CSV: " + e.getMessage());
+        }
+    }
+
+    private Long parseLong(String value, String field, int lineNumber) {
+        try {
+            return Long.parseLong(value.trim());
+        } catch (NumberFormatException e) {
+            throw new BusinessException("La valeur '" + value + "' pour le champ '" + field + "' à la ligne " + lineNumber + " n'est pas un nombre valide");
+        }
+    }
+
+    private Double parseDouble(String value, String field, int lineNumber) {
+        try {
+            return Double.parseDouble(value.trim());
+        } catch (NumberFormatException e) {
+            throw new BusinessException("La valeur '" + value + "' pour le champ '" + field + "' à la ligne " + lineNumber + " n'est pas un montant valide");
         }
     }
 
@@ -154,32 +187,67 @@ public class TransactionService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException("Utilisateur introuvable"));
 
+        if (file.isEmpty()) {
+            throw new BusinessException("Le fichier CSV est vide");
+        }
+
         try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             String[] line;
-            reader.readNext(); // Skip header
-
-            while ((line = reader.readNext()) != null) {
-                Long sourceId = Long.parseLong(line[0]);
-                Long targetId = Long.parseLong(line[1]);
-                Double amount = Double.parseDouble(line[2]);
-                String description = line[3];
-
-                // Check if user owns the source account
-                if (!userOwnsAccount(sourceId, username)) {
-                    throw new BusinessException("Compte source non autorisé");
-                }
-
-                CreateTransactionRequest request = new CreateTransactionRequest();
-                request.setType(TransactionType.TRANSFER);
-                request.setAmount(amount);
-                request.setTargetAccountId(targetId);
-                request.setDescription(description);
-
-                createTransaction(sourceId, request);
+            String[] headers = reader.readNext(); // Read header
+            
+            if (headers == null || headers.length < 4) {
+                throw new BusinessException("Le format du fichier CSV est invalide. Format attendu: ID Source, ID Destination, Montant, Description");
             }
 
+            int lineNumber = 1;
+            int successCount = 0;
+
+            while ((line = reader.readNext()) != null) {
+                lineNumber++;
+                try {
+                    if (line.length < 4) {
+                        throw new BusinessException("La ligne " + lineNumber + " ne contient pas assez de colonnes. Format attendu: ID Source, ID Destination, Montant, Description");
+                    }
+
+                    Long sourceId = parseLong(line[0], "ID Source", lineNumber);
+                    Long targetId = parseLong(line[1], "ID Destination", lineNumber);
+                    Double amount = parseDouble(line[2], "Montant", lineNumber);
+                    String description = line[3];
+
+                    if (description == null || description.trim().isEmpty()) {
+                        throw new BusinessException("La description est requise à la ligne " + lineNumber);
+                    }
+
+                    // Check if user owns the source account
+                    if (!userOwnsAccount(sourceId, username)) {
+                        throw new BusinessException("Vous n'êtes pas autorisé à effectuer des transactions depuis le compte " + sourceId);
+                    }
+
+                    CreateTransactionRequest request = new CreateTransactionRequest();
+                    request.setType(TransactionType.TRANSFER);
+                    request.setAmount(amount);
+                    request.setTargetAccountId(targetId);
+                    request.setDescription(description);
+
+                    createTransaction(sourceId, request);
+                    successCount++;
+                } catch (BusinessException e) {
+                    throw new BusinessException("Erreur à la ligne " + lineNumber + ": " + e.getMessage());
+                }
+            }
+
+            if (successCount == 0) {
+                throw new BusinessException("Aucune transaction n'a été effectuée");
+            }
+            
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
-            throw new BusinessException("Erreur lors de l'import du fichier CSV: " + e.getMessage());
+            if (e.getMessage() != null && !e.getMessage().isEmpty()) {
+                throw new BusinessException("Erreur lors de l'import du fichier CSV: " + e.getMessage());
+            } else {
+                throw new BusinessException("Erreur lors de l'import du fichier CSV: Format invalide");
+            }
         }
     }
 
