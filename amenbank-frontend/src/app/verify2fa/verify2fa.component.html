@@ -1,0 +1,10 @@
+<h2>Vérification 2FA</h2>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label for="username">Nom d'utilisateur</label>
+  <input id="username" formControlName="username" type="text" />
+
+  <label for="token">Code 2FA</label>
+  <input id="token" formControlName="token" type="text" />
+
+  <button type="submit">Vérifier</button>
+</form>

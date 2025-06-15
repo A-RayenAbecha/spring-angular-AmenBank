@@ -1,0 +1,252 @@
+<!-- src/app/components/transaction-list/transaction-list.component.html -->
+
+<div class="transaction-list-container">
+  
+  <!-- Header Section -->
+  <div class="transaction-header">
+    <div class="header-left">
+      <h3>
+        <span class="icon">💳</span>
+        Liste des Transactions
+        <span class="transaction-count" *ngIf="totalTransactions > 0">
+          ({{ totalTransactions }})
+        </span>
+      </h3>
+    </div>
+    <div class="header-actions">
+      <button 
+        class="btn-refresh" 
+        (click)="refreshTransactions()" 
+        [disabled]="loading"
+        title="Actualiser">
+        <span *ngIf="loading">⏳</span>
+        <span *ngIf="!loading">🔄</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section" *ngIf="showFilters">
+    <div class="filters-header">
+      <h4>🔍 Filtres</h4>
+      <button class="btn-clear-filters" (click)="clearFilters()" title="Effacer les filtres">
+        ✖️ Effacer
+      </button>
+    </div>
+    
+    <div class="filters-grid">
+      <!-- Transaction Type Filter -->
+      <div class="filter-group">
+        <label for="typeFilter">Type</label>
+        <select 
+          id="typeFilter"
+          [(ngModel)]="filters.type" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-select">
+          <option value="">Tous les types</option>
+          <option [value]="TransactionType.DEPOSIT">Dépôt</option>
+          <option [value]="TransactionType.WITHDRAWAL">Retrait</option>
+          <option [value]="TransactionType.TRANSFER">Virement</option>
+        </select>
+      </div>
+
+      <!-- Date Range Filters -->
+      <div class="filter-group">
+        <label for="startDate">Date début</label>
+        <input 
+          id="startDate"
+          type="date" 
+          [(ngModel)]="filters.startDate" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="endDate">Date fin</label>
+        <input 
+          id="endDate"
+          type="date" 
+          [(ngModel)]="filters.endDate" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-input">
+      </div>
+
+      <!-- Amount Range Filters -->
+      <div class="filter-group">
+        <label for="minAmount">Montant min</label>
+        <input 
+          id="minAmount"
+          type="number" 
+          step="0.01"
+          [(ngModel)]="filters.minAmount" 
+          (ngModelChange)="onFilterChange()"
+          placeholder="0.00"
+          class="filter-input">
+      </div>
+
+      <div class="filter-group">
+        <label for="maxAmount">Montant max</label>
+        <input 
+          id="maxAmount"
+          type="number" 
+          step="0.01"
+          [(ngModel)]="filters.maxAmount" 
+          (ngModelChange)="onFilterChange()"
+          placeholder="0.00"
+          class="filter-input">
+      </div>
+
+      <!-- Description Filter -->
+      <div class="filter-group filter-description">
+        <label for="descriptionFilter">Description</label>
+        <input 
+          id="descriptionFilter"
+          type="text" 
+          [(ngModel)]="filters.description" 
+          (ngModelChange)="onFilterChange()"
+          placeholder="Rechercher dans les descriptions..."
+          class="filter-input">
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Chargement des transactions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="errorMessage && !loading">
+    <div class="error-content">
+      <span class="error-icon">❌</span>
+      <p>{{ errorMessage }}</p>
+      <button class="btn-retry" (click)="refreshTransactions()">Réessayer</button>
+    </div>
+  </div>
+
+  <!-- No Data State -->
+  <div class="no-data-state" *ngIf="!loading && !errorMessage && displayedTransactions.length === 0">
+    <div class="no-data-content">
+      <span class="no-data-icon">📄</span>
+      <h4>Aucune transaction trouvée</h4>
+      <p *ngIf="totalTransactions === 0">Il n'y a pas encore de transactions pour ce compte.</p>
+      <p *ngIf="totalTransactions > 0">Aucune transaction ne correspond aux filtres appliqués.</p>
+      <button 
+        class="btn-clear-filters" 
+        (click)="clearFilters()" 
+        *ngIf="totalTransactions > 0">
+        Effacer les filtres
+      </button>
+    </div>
+  </div>
+
+  <!-- Transactions Table -->
+  <div class="transactions-table-container" *ngIf="!loading && !errorMessage && displayedTransactions.length > 0">
+    
+    <!-- Summary Info -->
+    <div class="table-summary" *ngIf="showPagination">
+      <span class="summary-text">
+        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à 
+        {{ Math.min(currentPage * pageSize, totalTransactions) }} 
+        sur {{ totalTransactions }} transactions
+      </span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th 
+              class="sortable" 
+              (click)="onSort('date')"
+              [class.active]="sortField === 'date'">
+              Date {{ getSortIcon('date') }}
+            </th>
+            <th 
+              class="sortable" 
+              (click)="onSort('type')"
+              [class.active]="sortField === 'type'">
+              Type {{ getSortIcon('type') }}
+            </th>
+            <th 
+              class="sortable" 
+              (click)="onSort('description')"
+              [class.active]="sortField === 'description'">
+              Description {{ getSortIcon('description') }}
+            </th>
+            <th 
+              class="sortable amount-column" 
+              (click)="onSort('amount')"
+              [class.active]="sortField === 'amount'">
+              Montant {{ getSortIcon('amount') }}
+            </th>
+            <th 
+              class="sortable amount-column" 
+              (click)="onSort('balanceAfter')"
+              [class.active]="sortField === 'balanceAfter'">
+              Solde après {{ getSortIcon('balanceAfter') }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            *ngFor="let transaction of displayedTransactions" 
+            class="transaction-row"
+            [class]="getTransactionTypeClass(transaction.type)">
+            
+            <td class="date-cell">
+              {{ formatDate(transaction.date) }}
+            </td>
+            <td class="type-cell">
+              {{ transaction.type }}
+            </td>
+            <td class="description-cell">
+              {{ transaction.description }}
+            </td>
+            <td class="amount-cell">
+              {{ transaction.amount | number:'1.2-2' }} TND
+            </td>
+            <td class="balance-cell">
+              {{ transaction.balanceAfter | number:'1.2-2' }} TND
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="showPagination && totalPages > 1">
+      <button 
+        class="page-btn" 
+        [disabled]="currentPage === 1"
+        (click)="goToFirstPage()">
+        ⟪
+      </button>
+      <button 
+        class="page-btn" 
+        [disabled]="currentPage === 1"
+        (click)="goToPreviousPage()">
+        ⟨
+      </button>
+      
+      <span class="page-info">
+        Page {{ currentPage }} sur {{ totalPages }}
+      </span>
+      
+      <button 
+        class="page-btn" 
+        [disabled]="currentPage === totalPages"
+        (click)="goToNextPage()">
+        ⟩
+      </button>
+      <button 
+        class="page-btn" 
+        [disabled]="currentPage === totalPages"
+        (click)="goToLastPage()">
+        ⟫
+      </button>
+    </div>
+  </div>
+</div>

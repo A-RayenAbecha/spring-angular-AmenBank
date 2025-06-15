@@ -1,0 +1,248 @@
+.dashboard-container {
+  padding: 1.5rem;
+  background-color: var(--background);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0;
+  }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--text-primary);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+    }
+  }
+
+  .card-content {
+    .amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0.5rem 0;
+    }
+
+    .description {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+}
+
+.transactions-section {
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 1.5rem;
+    color: var(--text-primary);
+  }
+}
+
+.transaction-list {
+  .transaction-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateX(4px);
+    }
+
+    .transaction-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      background: var(--primary);
+      color: white;
+    }
+
+    .transaction-details {
+      flex: 1;
+
+      .transaction-title {
+        font-weight: 500;
+        margin: 0;
+        color: var(--text-primary);
+      }
+
+      .transaction-type {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .transaction-description {
+        color: var(--text-secondary);
+        margin: 0.25rem 0;
+      }
+
+      .transaction-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin: 0.25rem 0 0;
+      }
+    }
+
+    .transaction-amount {
+      font-weight: 600;
+      
+      &.credit {
+        color: #22c55e;
+      }
+      
+      &.debit {
+        color: #ef4444;
+      }
+    }
+  }
+}
+
+/* Dark mode enhancements */
+:host-context(.dark-theme) {
+  .dashboard-container {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-color: #475569;
+
+    &:hover {
+      box-shadow: 0 8px 20px rgba(96, 165, 250, 0.2);
+    }
+  }
+
+  .transactions-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-color: #475569;
+  }
+
+  .transaction-item {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: #475569;
+
+    &:hover {
+      background: rgba(51, 65, 85, 0.9);
+    }
+  }
+}
+
+/* Light mode enhancements */
+:host-context(.light-theme) {
+  .dashboard-container {
+    background: #f8fafc;
+  }
+
+  .card {
+    background: white;
+    border-color: #e2e8f0;
+
+    &:hover {
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.1);
+    }
+
+    .card-content {
+      .amount {
+        color: #1e293b;
+      }
+
+      .description {
+        color: #64748b;
+      }
+    }
+  }
+
+  .transactions-section {
+    background: white;
+    border-color: #e2e8f0;
+  }
+
+  .transaction-item {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+
+    &:hover {
+      background: white;
+    }
+
+    .transaction-details {
+      .transaction-title,
+      .transaction-type {
+        color: #1e293b;
+      }
+
+      .transaction-description,
+      .transaction-date {
+        color: #64748b;
+      }
+    }
+  }
+} 

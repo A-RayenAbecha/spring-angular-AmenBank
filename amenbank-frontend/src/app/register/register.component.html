@@ -1,0 +1,65 @@
+<div class="register-container">
+  <h2 class="register-title">Register</h2>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <label for="username">Username</label>
+    <input id="username" formControlName="username" type="text" placeholder="Username" />
+    <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="error-message">
+      Username is required.
+    </div>
+
+    <label for="first_name">First Name</label>
+    <input id="first_name" formControlName="first_name" type="text" placeholder="First Name" />
+    <div *ngIf="registerForm.get('first_name')?.invalid && registerForm.get('first_name')?.touched" class="error-message">
+      First Name is required.
+    </div>
+
+    <label for="last_name">Last Name</label>
+    <input id="last_name" formControlName="last_name" type="text" placeholder="Last Name" />
+    <div *ngIf="registerForm.get('last_name')?.invalid && registerForm.get('last_name')?.touched" class="error-message">
+      Last Name is required.
+    </div>
+
+    <label for="dateOfBirth">Date of Birth</label>
+    <input id="dateOfBirth" formControlName="dateOfBirth" type="date" />
+    <div *ngIf="registerForm.get('dateOfBirth')?.invalid && registerForm.get('dateOfBirth')?.touched" class="error-message">
+      Date of Birth is required.
+    </div>
+
+ <label for="cin">CIN *</label>
+<input
+  id="cin"
+  formControlName="cin"
+  type="text"
+  placeholder="Enter your CIN"
+  required
+/>
+<div *ngIf="registerForm.get('cin')?.touched && registerForm.get('cin')?.invalid" class="error">
+  <span *ngIf="registerForm.get('cin')?.errors?.['required']"></span>
+  <span *ngIf="registerForm.get('cin')?.errors?.['pattern']"></span>
+</div>
+
+    <label for="email">Email</label>
+    <input id="email" formControlName="email" type="email" placeholder="Email" />
+    <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
+      Please enter a valid email.
+    </div>
+
+    <label for="password">Password</label>
+    <input id="password" formControlName="password" type="password" placeholder="Password" />
+    <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
+      Password is required.
+    </div>
+
+    <label for="role">Role</label>
+    <select id="role" formControlName="role">
+      <option value="CLIENT">Client</option>
+      <option value="RESPONSABLE">Responsable</option>
+      <option value="SUPERADMIN">Super Admin</option>
+    </select>
+
+    <button type="submit" [disabled]="registerForm.invalid">Register
+        
+    </button>
+  </form>
+</div>

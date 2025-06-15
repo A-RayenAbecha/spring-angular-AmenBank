@@ -1,0 +1,250 @@
+.transaction-list-container {
+  background-color: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.transaction-list-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--surface);
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+  }
+}
+
+.transaction-list {
+  .transaction-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: all 0.2s ease;
+    background-color: var(--surface);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: var(--background);
+    }
+
+    .transaction-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      background: var(--primary);
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .transaction-details {
+      flex: 1;
+      min-width: 0;
+
+      .transaction-title {
+        font-weight: 500;
+        margin: 0;
+        color: var(--text-primary);
+      }
+
+      .transaction-type {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .transaction-description {
+        color: var(--text-secondary);
+        margin: 0.25rem 0;
+        font-size: 0.875rem;
+      }
+
+      .transaction-date {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+    }
+
+    .transaction-amount {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-left: 1rem;
+      flex-shrink: 0;
+      
+      &.credit {
+        color: #22c55e;
+      }
+      
+      &.debit {
+        color: #ef4444;
+      }
+    }
+
+    .transaction-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-left: 1rem;
+      flex-shrink: 0;
+
+      &.completed {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+      }
+
+      &.pending {
+        background-color: rgba(234, 179, 8, 0.15);
+        color: #eab308;
+      }
+
+      &.failed {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+      }
+    }
+  }
+}
+
+/* Dark theme enhancements - Matching Admin Style */
+:host-context(.dark-theme) {
+  .transaction-list-container {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border: 1px solid #475569;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .transaction-list-header {
+    background: rgba(30, 41, 59, 0.7);
+    border-bottom: 1px solid #475569;
+
+    h2 {
+      color: #e2e8f0;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  .transaction-list {
+    .transaction-item {
+      background: rgba(30, 41, 59, 0.7);
+      border-color: #475569;
+
+      &:hover {
+        background: rgba(51, 65, 85, 0.9);
+        border-color: #475569;
+      }
+
+      .transaction-icon {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .transaction-details {
+        .transaction-title {
+          color: #e2e8f0;
+        }
+
+        .transaction-type {
+          color: #e2e8f0;
+        }
+
+        .transaction-description {
+          color: #94a3b8;
+        }
+
+        .transaction-date {
+          color: #94a3b8;
+        }
+      }
+
+      .transaction-amount {
+        &.credit {
+          color: #4ade80;
+        }
+        
+        &.debit {
+          color: #f87171;
+        }
+      }
+
+      .transaction-status {
+        &.completed {
+          background-color: rgba(34, 197, 94, 0.2);
+          color: #4ade80;
+        }
+
+        &.pending {
+          background-color: rgba(234, 179, 8, 0.2);
+          color: #fbbf24;
+        }
+
+        &.failed {
+          background-color: rgba(239, 68, 68, 0.2);
+          color: #f87171;
+        }
+      }
+    }
+  }
+}
+
+/* Light theme enhancements */
+:host-context(.light-theme) {
+  .transaction-list-container {
+    background: white;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .transaction-list-header {
+    background: white;
+    border-color: #e2e8f0;
+  }
+
+  .transaction-list {
+    .transaction-item {
+      background: white;
+      border-color: #e2e8f0;
+
+      &:hover {
+        background: #f8fafc;
+      }
+
+      .transaction-details {
+        .transaction-title,
+        .transaction-type {
+          color: #1e293b;
+        }
+
+        .transaction-description,
+        .transaction-date {
+          color: #64748b;
+        }
+      }
+    }
+  }
+} 

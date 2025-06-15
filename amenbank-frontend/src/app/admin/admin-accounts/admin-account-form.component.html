@@ -1,0 +1,106 @@
+<h2 mat-dialog-title>{{isEditMode ? 'Modifier le compte' : 'Créer un nouveau compte'}}</h2>
+
+<form [formGroup]="accountForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <div class="form-container">
+      <!-- IBAN Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>IBAN</mat-label>
+        <input matInput formControlName="iban" placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX">
+        <mat-error *ngIf="accountForm.get('iban')?.hasError('required')">
+          L'IBAN est obligatoire
+        </mat-error>
+        <mat-error *ngIf="accountForm.get('iban')?.hasError('pattern')">
+          Format d'IBAN invalide
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Account Number Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Numéro de compte</mat-label>
+        <input matInput formControlName="accountNumber" placeholder="XXXXXXXXXX">
+        <mat-error *ngIf="accountForm.get('accountNumber')?.hasError('required')">
+          Le numéro de compte est obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Balance Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Solde initial</mat-label>
+        <input matInput formControlName="balance" type="number" placeholder="0.00">
+        <span matSuffix>TND</span>
+        <mat-error *ngIf="accountForm.get('balance')?.hasError('required')">
+          Le solde est obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Account Type Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Type de compte</mat-label>
+        <mat-select formControlName="accountTypeId">
+          <mat-option *ngFor="let type of accountTypes" [value]="type.id">
+            {{type.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="accountForm.get('accountTypeId')?.hasError('required')">
+          Le type de compte est obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <!-- User Search Field -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Utilisateur</mat-label>
+        <input 
+          matInput 
+          formControlName="userSearch" 
+          placeholder="Rechercher un utilisateur"
+          [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayUserFn" (optionSelected)="onUserSelected($event)">
+          <mat-option *ngIf="isSearching" class="searching-option">
+            <mat-spinner diameter="20"></mat-spinner> Recherche en cours...
+          </mat-option>
+          <ng-container *ngIf="!isSearching">
+            <mat-option *ngFor="let user of filteredUsers" [value]="user">
+              {{user.firstName}} {{user.lastName}} ({{user.username}})
+            </mat-option>
+            <mat-option *ngIf="filteredUsers.length === 0 && accountForm.get('userSearch')?.value" class="no-results">
+              Aucun utilisateur trouvé
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+        <mat-error *ngIf="accountForm.get('userId')?.hasError('required')">
+          L'utilisateur est obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Selected User Info -->
+      <div *ngIf="selectedUser" class="selected-user-info">
+        <mat-card>
+          <mat-card-header>
+            <div mat-card-avatar class="user-avatar">
+              <mat-icon>person</mat-icon>
+            </div>
+            <mat-card-title>{{selectedUser.firstName}} {{selectedUser.lastName}}</mat-card-title>
+            <mat-card-subtitle>{{selectedUser.email}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p><strong>Nom d'utilisateur:</strong> {{selectedUser.username}}</p>
+            <p><strong>Téléphone:</strong> {{selectedUser.phoneNumber || 'Non renseigné'}}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Annuler</button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      type="submit" 
+      [disabled]="accountForm.invalid || isSubmitting">
+      <mat-spinner *ngIf="isSubmitting" diameter="20" class="spinner-button"></mat-spinner>
+      <span *ngIf="!isSubmitting">{{isEditMode ? 'Mettre à jour' : 'Créer'}}</span>
+    </button>
+  </mat-dialog-actions>
+</form> 

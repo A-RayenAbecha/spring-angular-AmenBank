@@ -1,0 +1,107 @@
+<div class="user-form">
+  <h2>{{ isEditMode ? 'Modifier l\'utilisateur' : 'Créer un nouvel utilisateur' }}</h2>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nom d'utilisateur</mat-label>
+      <input matInput formControlName="username" placeholder="Nom d'utilisateur" />
+      <mat-error *ngIf="userForm.get('username')?.invalid && userForm.get('username')?.touched">
+        Nom d'utilisateur requis, 4-20 caractères.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="firstName" placeholder="Prénom" />
+      <mat-error *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
+        <span *ngIf="userForm.get('firstName')?.errors?.['required']">Prénom est requis.</span>
+        <span *ngIf="userForm.get('firstName')?.errors?.['minlength'] || userForm.get('firstName')?.errors?.['maxlength']">
+          Prénom doit contenir entre 2 et 30 caractères.
+        </span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="lastName" placeholder="Nom" />
+      <mat-error *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
+        <span *ngIf="userForm.get('lastName')?.errors?.['required']">Nom est requis.</span>
+        <span *ngIf="userForm.get('lastName')?.errors?.['minlength'] || userForm.get('lastName')?.errors?.['maxlength']">
+          Nom doit contenir entre 2 et 30 caractères.
+        </span>
+      </mat-error>
+    </mat-form-field>
+
+<mat-form-field appearance="fill" class="full-width">
+  <mat-label>Date de naissance</mat-label>
+  <input matInput 
+         formControlName="dateOfBirth" 
+         type="date" 
+         [max]="maxDate" />
+  <mat-error *ngIf="userForm.get('dateOfBirth')?.invalid && userForm.get('dateOfBirth')?.touched">
+    <span *ngIf="userForm.get('dateOfBirth')?.errors?.['required']">Date de naissance est requise.</span>
+    <span *ngIf="userForm.get('dateOfBirth')?.errors?.['max']">La date de naissance doit être dans le passé.</span>
+  </mat-error>
+</mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>CIN</mat-label>
+      <input matInput formControlName="cin" placeholder="CIN (8 chiffres)" />
+      <mat-error *ngIf="userForm.get('cin')?.invalid && userForm.get('cin')?.touched">
+        <span *ngIf="userForm.get('cin')?.errors?.['required']">CIN est requis.</span>
+        <span *ngIf="userForm.get('cin')?.errors?.['pattern']">CIN doit contenir exactement 8 chiffres.</span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" placeholder="Email" />
+      <mat-error *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+        Email invalide.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width" *ngIf="!isEditMode">
+      <mat-label>Mot de passe</mat-label>
+      <input matInput formControlName="password" type="password" placeholder="Mot de passe" />
+      <mat-error *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+        Mot de passe requis, minimum 8 caractères.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Rôle</mat-label>
+      <mat-select formControlName="role">
+        <mat-option *ngFor="let roleOption of roles" [value]="roleOption.value">
+          {{ roleOption.label }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched">
+        Sélectionnez un rôle.
+      </mat-error>
+    </mat-form-field>
+
+    <div style="margin: 20px 0;">
+      <mat-checkbox formControlName="enabled">Activé</mat-checkbox>
+    </div>
+    <div style="margin: 20px 0;">
+      <mat-checkbox formControlName="accountNonLocked">Compte non verrouillé</mat-checkbox>
+    </div>
+    <div style="margin: 20px 0;">
+      <mat-checkbox formControlName="twoFactorEnabled">2FA activé</mat-checkbox>
+    </div>
+
+    <div class="form-actions" style="margin-top: 30px;">
+      <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid">
+        {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+      </button>
+      <button mat-button type="button" (click)="cancel()" style="margin-left: 10px;">
+        Annuler
+      </button>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message" style="color: red; margin-top: 10px;">
+      {{ errorMessage }}
+    </div>
+  </form>
+</div>

@@ -1,0 +1,89 @@
+.client-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+}
+
+.main-content {
+  flex: 1;
+  min-height: calc(100vh - 64px);
+  background-color: var(--background);
+  transition: all 0.3s ease;
+}
+
+.content-wrapper {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.client-header {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.header-content {
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+/* Dark theme enhancements - Matching Admin Style */
+:host-context(.dark-theme) {
+  .client-layout {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .main-content {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .content-wrapper {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .client-main {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .client-header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-bottom: 1px solid #475569;
+  }
+
+  .client-footer {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-color: #475569;
+  }
+}
+
+/* Light theme enhancements */
+:host-context(.light-theme) {
+  .client-layout {
+    background: #f8fafc;
+  }
+
+  .main-content {
+    background: #f8fafc;
+  }
+
+  .content-wrapper {
+    background: #f8fafc;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 1rem;
+  }
+} 

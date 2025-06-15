@@ -1,0 +1,42 @@
+.user-form {
+  max-width: 400px;
+  margin: auto; // horizontally center
+  margin-top: 5vh; // some vertical spacing from top, adjust as you like
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+
+  h2 {
+    margin-bottom: 2rem;
+    font-weight: 700;
+    font-size: 1.75rem;
+    text-align: center;
+    color: #3f51b5; /* or your theme primary color */
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .error-message {
+    color: #f44336; // Material red 500
+    margin-top: 1rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  mat-checkbox {
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+}

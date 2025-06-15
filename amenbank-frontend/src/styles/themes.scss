@@ -1,0 +1,216 @@
+// styles/themes.scss - Centralized theme variables
+
+:root {
+  // Common colors (theme-independent)
+  --success: #28a745;
+  --success-light: #d4edda;
+  --success-dark: #1e7e34;
+  
+  --error: #dc3545;
+  --error-light: #f8d7da;
+  --error-dark: #c82333;
+  --error-border: #f5c6cb;
+  --error-text: #721c24;
+  
+  --warning: #ffc107;
+  --warning-light: #fff3cd;
+  --warning-dark: #e0a800;
+  
+  --info: #17a2b8;
+  --info-light: #d1ecf1;
+  --info-dark: #138496;
+  
+  // Transition settings
+  --theme-transition: all 0.3s ease;
+
+  // Add these CSS variables if missing
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  
+  --font-size-sm: 14px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 50%;
+
+}
+
+// Light theme
+.light-theme {
+  // Primary colors
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #e0f2fe;
+  --primary-dark: #075985;
+  --primary-alpha: rgba(2, 132, 199, 0.1);
+  
+  // Background colors
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-variant: #f1f5f9;
+  --surface-hover: #f8f9fa;
+  --surface-disabled: #f8f9fa;
+  
+  // Text colors
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-disabled: #94a3b8;
+  
+  // Border colors
+  --border: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --border-focus: #0284c7;
+  
+  // Shadow colors
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  // Sidebar
+  --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  --sidebar-text: #ffffff;
+}
+
+// Dark theme
+.dark-theme {
+  // Primary colors
+  --primary: #0ea5e9;
+  --primary-hover: #0284c7;
+  --primary-light: #1e293b;
+  --primary-dark: #38bdf8;
+  --primary-alpha: rgba(14, 165, 233, 0.2);
+  
+  // Background colors
+  --background: #0f172a;
+  --surface: #1e293b;
+  --surface-variant: #334155;
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --surface-disabled: #374151;
+  
+  // Text colors
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-disabled: #64748b;
+  
+  // Border colors
+  --border: #334155;
+  --border-hover: #475569;
+  --border-focus: #0ea5e9;
+  
+  // Shadow colors
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.5);
+  
+  // Sidebar
+  --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+  --sidebar-text: #f1f5f9;
+  
+  // Dark theme specific adjustments for status colors
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #06b6d4;
+}
+
+// Global theme transition
+* {
+  transition: var(--theme-transition);
+}
+
+// Material Design overrides
+.mat-mdc-card {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-table {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-button:not([disabled]) {
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-form-field {
+  .mat-mdc-input-element {
+    color: var(--text-primary) !important;
+    caret-color: var(--primary) !important;
+  }
+  
+  .mat-mdc-form-field-label {
+    color: var(--text-secondary) !important;
+  }
+  
+  .mat-mdc-form-field-focus-overlay {
+    background-color: var(--primary-alpha) !important;
+  }
+}
+
+.mat-mdc-dialog-container {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-menu-panel {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+}
+
+.mat-mdc-option {
+  color: var(--text-primary) !important;
+  
+  &:hover:not(.mat-mdc-option-disabled) {
+    background-color: var(--primary-alpha) !important;
+  }
+  
+  &.mat-mdc-option-active {
+    background-color: var(--primary-light) !important;
+  }
+}
+
+// Form controls
+input, select, textarea {
+  background-color: var(--surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+  
+  &::placeholder {
+    color: var(--text-secondary) !important;
+  }
+  
+  &:focus {
+    border-color: var(--border-focus) !important;
+    box-shadow: 0 0 0 2px var(--primary-alpha) !important;
+  }
+}
+
+// Scrollbar theming (webkit browsers)
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-variant);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+.success-snackbar {
+  background-color: var(--success) !important;
+  color: white !important;
+}

@@ -1,0 +1,53 @@
+<div class="user-management">
+
+  <button mat-raised-button color="primary" (click)="addUser()" >Créer un nouvel utilisateur</button>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+  <table mat-table [dataSource]="users" class="mat-elevation-z8" *ngIf="!isLoading && users.length > 0">
+
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef>Nom d'utilisateur</th>
+      <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>Email</th>
+      <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef>Rôle</th>
+      <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="enabled">
+      <th mat-header-cell *matHeaderCellDef>Activé</th>
+      <td mat-cell *matCellDef="let user">{{ user.enabled ? 'Oui' : 'Non' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let user">
+        <button mat-icon-button color="accent" (click)="editUser(user)" matTooltip="Modifier">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteUser(user)" matTooltip="Supprimer">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" (click)="resetPassword(user)" matTooltip="Réinitialiser mot de passe">
+          <mat-icon>lock_reset</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['username', 'email', 'role', 'enabled', 'actions']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['username', 'email', 'role', 'enabled', 'actions']"></tr>
+  </table>
+
+  <div *ngIf="!isLoading && users.length === 0" class="empty-message">
+    Aucun utilisateur trouvé.
+  </div>
+</div>

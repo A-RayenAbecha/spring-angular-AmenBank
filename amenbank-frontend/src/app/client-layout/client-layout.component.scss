@@ -1,0 +1,175 @@
+.client-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+.client-header {
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: var(--theme-transition);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+.logo-section h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--sidebar-text);
+  transition: var(--theme-transition);
+}
+
+.welcome-text {
+  font-size: 14px;
+  opacity: 0.9;
+  display: block;
+  margin-top: 2px;
+  color: var(--sidebar-text);
+  transition: var(--theme-transition);
+}
+
+.main-nav {
+  display: flex;
+  gap: 30px;
+}
+
+.nav-link {
+  color: var(--sidebar-text);
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  opacity: 0.8;
+  transition: var(--theme-transition);
+  border: 1px solid transparent; // Add transparent border for smooth transitions
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    background-color: var(--primary);
+    opacity: 1;
+    box-shadow: var(--shadow);
+  }
+
+  // Better focus states for accessibility
+  &:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+.client-main {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--background); // Use CSS variable instead of hardcoded
+  transition: var(--theme-transition);
+}
+
+.client-footer {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  text-align: center;
+  padding: 20px;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  transition: var(--theme-transition);
+}
+
+// Remove the :host-context specific styles since CSS variables handle theming
+// The CSS variables from your themes.scss already handle the differences
+
+// Responsive design improvements
+@media (max-width: 768px) {
+  .header-content {
+    padding: 0 15px;
+    flex-direction: column;
+    height: auto;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    gap: 15px;
+  }
+
+  .main-nav {
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .client-main {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-section h1 {
+    font-size: 20px;
+  }
+
+  .welcome-text {
+    font-size: 12px;
+  }
+
+  .main-nav {
+    gap: 10px;
+  }
+
+  .nav-link {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+
+// High contrast mode for accessibility
+@media (prefers-contrast: high) {
+  .nav-link {
+    border: 1px solid var(--border);
+    
+    &:hover {
+      border-color: var(--primary);
+    }
+    
+    &.active {
+      border-color: var(--primary);
+    }
+  }
+}
+
+// Reduced motion for accessibility
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    transform: none !important;
+  }
+}

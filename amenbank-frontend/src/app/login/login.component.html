@@ -1,0 +1,65 @@
+<div class="login-container">
+  <h2 class="login-title">Login</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Username</mat-label>
+      <input
+        matInput
+        id="username"
+        type="text"
+        formControlName="username"
+        aria-describedby="username-error"
+        required
+      />
+      <mat-error *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" id="username-error">
+        Username is required.
+        
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        id="password"
+        type="password"
+        formControlName="password"
+        aria-describedby="password-error"
+        required
+      />
+      <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" id="password-error">
+        Password is required.
+      </mat-error>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="loginForm.invalid"
+      class="full-width"
+      aria-label="Login button"
+    >
+      Login
+    </button>
+  </form>
+
+  <div class="forgot-password-link" style="margin-top: 1rem;">
+    <a
+      (click)="navigateToForgotPassword()"
+      role="button"
+      tabindex="0"
+      (keydown.enter)="navigateToForgotPassword()"
+      class="link"
+      aria-label="Forgot Password"
+    >
+      Mot de passe oublié ?
+    </a>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message" aria-live="assertive" style="margin-top: 1rem;">
+    {{ errorMessage }}
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<div class="content-area">
+  <div class="dashboard-header">
+    <h1>Tableau de Bord</h1>
+    <p>Gérez vos comptes et transactions en un coup d'œil</p>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Account Summary Card -->
+    <div class="content-card">
+      <div class="card-header">
+        <h2>Solde du Compte</h2>
+        <div class="card-icon">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+      </div>
+      <div class="card-content">
+        <p class="amount">{{ accountBalance | currency:'EUR':'symbol':'1.2-2' }}</p>
+        <p class="description">Solde disponible</p>
+      </div>
+    </div>
+
+    <!-- Recent Transactions Card -->
+    <div class="content-card">
+      <div class="card-header">
+        <h2>Transactions Récentes</h2>
+        <div class="card-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+      </div>
+      <div class="card-content">
+        <p class="amount">{{ recentTransactionsCount }}</p>
+        <p class="description">Transactions ce mois</p>
+      </div>
+    </div>
+
+    <!-- Scheduled Transfers Card -->
+    <div class="content-card">
+      <div class="card-header">
+        <h2>Virements Programmés</h2>
+        <div class="card-icon">
+          <mat-icon>schedule</mat-icon>
+        </div>
+      </div>
+      <div class="card-content">
+        <p class="amount">{{ scheduledTransfersCount }}</p>
+        <p class="description">Virements en attente</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Transactions Table -->
+  <div class="content-card">
+    <h2>Dernières Transactions</h2>
+    <table class="themed-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Montant</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaction of recentTransactions">
+          <td>{{ transaction.date | date:'short' }}</td>
+          <td class="type-cell">{{ transaction.type }}</td>
+          <td class="description-cell">{{ transaction.description }}</td>
+          <td [class]="'transaction-amount ' + (transaction.amount >= 0 ? 'credit' : 'debit')">
+            {{ transaction.amount | currency:'EUR':'symbol':'1.2-2' }}
+          </td>
+          <td>
+            <span [class]="'transaction-status ' + transaction.status.toLowerCase()">
+              {{ transaction.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div> 

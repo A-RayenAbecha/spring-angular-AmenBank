@@ -1,0 +1,219 @@
+.transactions-container {
+  padding: 1.5rem;
+  min-height: calc(100vh - 64px);
+  transition: all 0.3s ease;
+
+  &.dark-theme {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #e2e8f0;
+  }
+
+  &.light-theme {
+    background: #f8fafc;
+    color: #1e293b;
+  }
+}
+
+.transactions-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+    opacity: 0.8;
+  }
+}
+
+.transactions-filters {
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+}
+
+.transactions-table {
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  table {
+    width: 100%;
+  }
+
+  .mat-mdc-header-cell {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+  }
+
+  .mat-mdc-cell {
+    font-size: 0.95rem;
+  }
+
+  .type-cell, .description-cell {
+    font-weight: 500;
+  }
+
+  .transaction-amount {
+    font-weight: 600;
+    font-size: 0.95rem;
+    
+    &.credit {
+      color: #4ade80;
+    }
+    
+    &.debit {
+      color: #f87171;
+    }
+  }
+
+  .transaction-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+
+    &.completed {
+      background-color: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+    }
+
+    &.pending {
+      background-color: rgba(234, 179, 8, 0.2);
+      color: #fbbf24;
+    }
+
+    &.failed {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  .transactions-filters {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-color: #475569;
+  }
+
+  .transactions-table {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-color: #475569;
+
+    .mat-mdc-header-cell {
+      color: #94a3b8;
+    }
+
+    .mat-mdc-cell {
+      color: #e2e8f0;
+    }
+
+    .mat-mdc-row {
+      background: rgba(30, 41, 59, 0.7);
+
+      &:hover {
+        background: rgba(51, 65, 85, 0.9);
+      }
+    }
+
+    .transaction-amount {
+      &.credit {
+        color: #4ade80;
+      }
+      
+      &.debit {
+        color: #f87171;
+      }
+    }
+
+    .transaction-status {
+      &.completed {
+        background-color: rgba(34, 197, 94, 0.2);
+        color: #4ade80;
+      }
+
+      &.pending {
+        background-color: rgba(234, 179, 8, 0.2);
+        color: #fbbf24;
+      }
+
+      &.failed {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+      }
+    }
+  }
+
+  .mat-mdc-paginator {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-color: #475569;
+    color: #94a3b8;
+  }
+}
+
+:host-context(.light-theme) {
+  .transactions-filters {
+    background: white;
+    border-color: #e2e8f0;
+  }
+
+  .transactions-table {
+    background: white;
+    border-color: #e2e8f0;
+
+    .mat-mdc-header-cell {
+      color: #475569;
+    }
+
+    .mat-mdc-cell {
+      color: #1e293b;
+    }
+
+    .mat-mdc-row {
+      background: white;
+
+      &:hover {
+        background: #f8fafc;
+      }
+    }
+  }
+
+  .mat-mdc-paginator {
+    background: white;
+    border-color: #e2e8f0;
+  }
+}
+
+@media (max-width: 768px) {
+  .transactions-container {
+    padding: 1rem;
+  }
+
+  .transactions-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .transactions-filters {
+    padding: 1rem;
+  }
+
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 0.75rem;
+  }
+} 
